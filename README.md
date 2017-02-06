@@ -24,7 +24,7 @@ The following **optional** features will be implemented:
 
 ## Video Walkthrough 
 
-Here's a walkthrough of implemented user stories:
+Here's a walkthrough:
 
 <img src='http://i.imgur.com/RMLmnTm.gifv' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
