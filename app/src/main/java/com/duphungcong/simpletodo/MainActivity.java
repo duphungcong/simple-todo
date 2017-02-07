@@ -1,24 +1,16 @@
 package com.duphungcong.simpletodo;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    ArrayList<String> items;
-    ArrayAdapter<String> itemsAdapter;
+    ArrayList<TodoItem> items;
+    TodoItemsAdapter itemsAdapter;
     ListView lvItems;
     static final int EDIT_REQUEST_CODE = 20;
 
@@ -27,22 +19,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         lvItems = (ListView)findViewById(R.id.lvItems);
-        readItems();
-        itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+        //readItems();
+        items = new ArrayList<>();
+        itemsAdapter = new TodoItemsAdapter(this, items);
         lvItems.setAdapter(itemsAdapter);
-        setupListViewListener();
+        TodoItem newItem = new TodoItem(1, "one");
+        items.add(newItem);
+        //setupListViewListener();
     }
 
 
     public void onAddItem(View v) {
         EditText etNewitem = (EditText)findViewById(R.id.etNewItem);
         String itemText = etNewitem.getText().toString();
-        itemsAdapter.add(itemText);
+        itemsAdapter.add(new TodoItem(10, itemText));
         etNewitem.setText("");
-        writeItems();
+        //writeItems();
     }
 
-    private void setupListViewListener() {
+    /*private void setupListViewListener() {
         lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -97,5 +92,5 @@ public class MainActivity extends AppCompatActivity {
                 writeItems();
             }
         }
-    }
+    }*/
 }
