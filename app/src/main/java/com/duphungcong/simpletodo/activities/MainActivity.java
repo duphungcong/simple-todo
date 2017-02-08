@@ -1,25 +1,25 @@
 package com.duphungcong.simpletodo.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import com.duphungcong.simpletodo.R;
-import com.duphungcong.simpletodo.models.TodoItem;
 import com.duphungcong.simpletodo.adapters.TodoItemsAdapter;
+import com.duphungcong.simpletodo.fragments.TodoItemDialogFragment;
+import com.duphungcong.simpletodo.models.TodoItem;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TodoItemDialogFragment.ItemDialogListener {
     ArrayList<TodoItem> items;
     TodoItemsAdapter itemsAdapter;
     ListView lvItems;
-    static final int EDIT_REQUEST_CODE = 20;
+    TodoItemDialogFragment todoItemDialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,15 +41,11 @@ public class MainActivity extends AppCompatActivity {
 
     // Add new item when click on ADD ITEM button
     public void onAddItem(View v) {
-        EditText etNewItem = (EditText)findViewById(R.id.etNewItem);
-        String newText = etNewItem.getText().toString();
-
         TodoItem newItem = new TodoItem();
-        newItem.setTitle(newText);
-        newItem.save();
 
-        itemsAdapter.add(newItem);
-        etNewItem.setText("");
+        FragmentManager fm = getSupportFragmentManager();
+        todoItemDialogFragment = TodoItemDialogFragment.newInstance(newItem, "new");
+        todoItemDialogFragment.show(fm, "fragment_todo_item");
     }
 
     private void setupListViewListener() {
@@ -74,16 +70,15 @@ public class MainActivity extends AppCompatActivity {
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(MainActivity.this, EditItemActivity.class);
 
                 TodoItem selectedItem = itemsAdapter.getItem(position);
 
-                i.putExtra("editedItem", selectedItem);
-                i.putExtra("itemPosition", position);
-
-                startActivityForResult(i, EDIT_REQUEST_CODE);
+                FragmentManager fm = getSupportFragmentManager();
+                todoItemDialogFragment = TodoItemDialogFragment.newInstance(selectedItem, "edit");
+                todoItemDialogFragment.show(fm, "fragment_todo_item");
             }
         });
+
     }
 
     // Read items from database
@@ -96,21 +91,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == EDIT_REQUEST_CODE) {
-            if(resultCode == RESULT_OK) {
-                // Data from edit activity
-                TodoItem editedItem = (TodoItem)data.getSerializableExtra("editedItem");
-                int itemPosition = data.getExtras().getInt("itemPosition");
-
-                // Update ListView
-                items.set(itemPosition, editedItem);
-                itemsAdapter.notifyDataSetChanged();
-
-                // Write-down edited item in database
-                editedItem.save();
-            }
+    public void onFinishItemDialog(TodoItem newItem, String action) {
+        newItem.save();
+        if(action == "new") {
+            itemsAdapter.add(newItem);
+        } else { // action = "edit"
+            itemsAdapter.notifyDataSetChanged();
         }
+    }
+
+    public void onSaveItem(View v) {
+        todoItemDialogFragment.onSaveItem(v);
     }
 }

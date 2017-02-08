@@ -10,7 +10,9 @@ import android.widget.TextView;
 import com.duphungcong.simpletodo.R;
 import com.duphungcong.simpletodo.models.TodoItem;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class TodoItemsAdapter extends ArrayAdapter<TodoItem> {
     public TodoItemsAdapter(Context context, ArrayList<TodoItem> items) {
@@ -24,13 +26,23 @@ public class TodoItemsAdapter extends ArrayAdapter<TodoItem> {
         if(convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.todo_item, parent, false);
         }
+        // Get fields of view
+        TextView tvId = (TextView) convertView.findViewById(R.id.tvId);
+        TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+        TextView tvDueDate = (TextView) convertView.findViewById(R.id.tvDueDate);
 
-        TextView tvId = (TextView)convertView.findViewById(R.id.tvId);
-        TextView tvTitle = (TextView)convertView.findViewById(R.id.tvTitle);
-
+        // Set value for fields
         tvId.setText("" + currentItem.id);
         tvTitle.setText(currentItem.title);
+        tvDueDate.setText(showDate(currentItem.dueDate));
 
         return convertView;
+    }
+
+    // Convert Date to String with string format MM dd, YYYY
+    public String showDate(Date date) {
+        String dateString;
+        dateString = DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);
+        return dateString;
     }
 }

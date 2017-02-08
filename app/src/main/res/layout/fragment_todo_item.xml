@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/new_item"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,41 +9,41 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <TextView
+            android:id="@+id/lblTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ID:"
+            android:text="Task Title"
             />
-        <TextView
-            android:id="@+id/tvId"
+        <EditText
+            android:id="@+id/etTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="id"
             />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="title"
-        />
 
     <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Due Date"/>
+        <DatePicker
+            android:id="@+id/dpDueDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/DatePickerTheme"
+            >
+        </DatePicker>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Due Date:"
-            />
-        <TextView
-            android:id="@+id/tvDueDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="date"/>
     </LinearLayout>
+
+    <Button
+        android:onClick="onSaveItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SAVE ITEM"/>
 
 </LinearLayout>
