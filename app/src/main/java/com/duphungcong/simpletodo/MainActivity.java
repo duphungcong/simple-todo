@@ -1,10 +1,14 @@
 package com.duphungcong.simpletodo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import java.util.ArrayList;
 
@@ -18,65 +22,73 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         lvItems = (ListView)findViewById(R.id.lvItems);
-        //readItems();
-        items = new ArrayList<>();
+
+        // Read items from database
+        readItems();
+
+        // Setup ListView adapter
         itemsAdapter = new TodoItemsAdapter(this, items);
         lvItems.setAdapter(itemsAdapter);
-        TodoItem newItem = new TodoItem(1, "one");
-        items.add(newItem);
-        //setupListViewListener();
+
+        // Listen events from ListView
+        setupListViewListener();
     }
 
-
+    // Add new item when click on ADD ITEM button
     public void onAddItem(View v) {
-        EditText etNewitem = (EditText)findViewById(R.id.etNewItem);
-        String itemText = etNewitem.getText().toString();
-        itemsAdapter.add(new TodoItem(10, itemText));
-        etNewitem.setText("");
-        //writeItems();
+        EditText etNewItem = (EditText)findViewById(R.id.etNewItem);
+        String newText = etNewItem.getText().toString();
+
+        TodoItem newItem = new TodoItem();
+        newItem.setTitle(newText);
+        newItem.save();
+
+        itemsAdapter.add(newItem);
+        etNewItem.setText("");
     }
 
-    /*private void setupListViewListener() {
+    private void setupListViewListener() {
+        // Press and hold to delete item
         lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                TodoItem selectedItem = itemsAdapter.getItem(position);
+
+                // Update ListView
                 items.remove(position);
                 itemsAdapter.notifyDataSetChanged();
-                writeItems();
+
+                // Delete selected item from database
+                selectedItem.delete();
+
                 return true;
             }
         });
 
+        // Click to edit item
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(MainActivity.this, EditItemActivity.class);
-                String itemText = ((TextView)view).getText().toString();
-                i.putExtra("itemText", itemText );
+
+                TodoItem selectedItem = itemsAdapter.getItem(position);
+
+                i.putExtra("editedItem", selectedItem);
                 i.putExtra("itemPosition", position);
+
                 startActivityForResult(i, EDIT_REQUEST_CODE);
             }
         });
     }
 
+    // Read items from database
     private void readItems() {
-        File filesDir = getFilesDir().getAbsoluteFile();
-        File todoFile = new File(filesDir, "todo.txt");
         try {
-            items = new ArrayList<String>(FileUtils.readLines(todoFile));
-        } catch (IOException e) {
-            items = new ArrayList<String>();
-        }
-    }
-
-    private void writeItems() {
-        File filesDir = getFilesDir();
-        File todoFile = new File(filesDir, "todo.txt");
-        try {
-            FileUtils.writeLines(todoFile, items);
-        } catch (IOException e) {
-            e.printStackTrace();
+            items = (ArrayList<TodoItem>) SQLite.select().from(TodoItem.class).queryList();
+        } catch (Exception e) {
+            items = new ArrayList<>();
         }
     }
 
@@ -85,12 +97,17 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == EDIT_REQUEST_CODE) {
             if(resultCode == RESULT_OK) {
-                String itemText = data.getExtras().getString("itemText");
+                // Data from edit activity
+                TodoItem editedItem = (TodoItem)data.getSerializableExtra("editedItem");
                 int itemPosition = data.getExtras().getInt("itemPosition");
-                items.set(itemPosition, itemText);
+
+                // Update ListView
+                items.set(itemPosition, editedItem);
                 itemsAdapter.notifyDataSetChanged();
-                writeItems();
+
+                // Write-down edited item in database
+                editedItem.save();
             }
         }
-    }*/
+    }
 }
