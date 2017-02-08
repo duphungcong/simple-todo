@@ -1,5 +1,6 @@
-package com.duphungcong.simpletodo;
+package com.duphungcong.simpletodo.models;
 
+import com.duphungcong.simpletodo.SimpleTodoDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
@@ -12,10 +13,10 @@ public class TodoItem extends BaseModel implements Serializable {
 
     @Column
     @PrimaryKey(autoincrement = true)
-    int id;
+    public int id;
 
     @Column
-    String title;
+    public String title;
 
     public void setTitle(String title) {
         this.title = title;

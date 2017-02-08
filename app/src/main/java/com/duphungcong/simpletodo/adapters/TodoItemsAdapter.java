@@ -1,4 +1,4 @@
-package com.duphungcong.simpletodo;
+package com.duphungcong.simpletodo.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.duphungcong.simpletodo.R;
+import com.duphungcong.simpletodo.models.TodoItem;
 
 import java.util.ArrayList;
 

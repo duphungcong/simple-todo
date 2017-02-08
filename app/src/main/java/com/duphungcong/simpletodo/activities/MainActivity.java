@@ -1,4 +1,4 @@
-package com.duphungcong.simpletodo;
+package com.duphungcong.simpletodo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,9 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.duphungcong.simpletodo.R;
+import com.duphungcong.simpletodo.models.TodoItem;
+import com.duphungcong.simpletodo.adapters.TodoItemsAdapter;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import java.util.ArrayList;
