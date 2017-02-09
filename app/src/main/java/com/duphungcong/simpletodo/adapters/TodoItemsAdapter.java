@@ -27,12 +27,10 @@ public class TodoItemsAdapter extends ArrayAdapter<TodoItem> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.todo_item, parent, false);
         }
         // Get fields of view
-        TextView tvId = (TextView) convertView.findViewById(R.id.tvId);
         TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
         TextView tvDueDate = (TextView) convertView.findViewById(R.id.tvDueDate);
 
         // Set value for fields
-        tvId.setText("" + currentItem.id);
         tvTitle.setText(currentItem.title);
         tvDueDate.setText(showDate(currentItem.dueDate));
 

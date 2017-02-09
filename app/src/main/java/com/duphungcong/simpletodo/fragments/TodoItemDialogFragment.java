@@ -59,11 +59,11 @@ public class TodoItemDialogFragment extends DialogFragment {
         action = getArguments().getString("action");
 
         // Get fields from view
-        // Title field
+        // Title
         etTitle = (EditText) view.findViewById(R.id.etTitle);
         etTitle.setText(newItem.title);
         etTitle.setSelection(newItem.title.length());
-        // Due-date field
+        // Due-date
         dpDueDate = (DatePicker) view.findViewById(R.id.dpDueDate);
         DatePickerUtil.dateToDatePicker(newItem.dueDate, dpDueDate);
     }
