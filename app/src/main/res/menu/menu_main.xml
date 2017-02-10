@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/btnAddItem"
+        android:icon="@drawable/ic_add_64x64"
+        app:showAsAction="ifRoom"
+        android:title="New"
+        >
+    </item>
+
+    <item
+        android:id="@+id/btnSaveItem"
+        android:icon="@drawable/ic_save_64x64"
+        android:title="Save"
+        app:showAsAction="ifRoom"
+        >
+    </item>
+
+    <item
+        android:id="@+id/btnCancel"
+        android:icon="@drawable/ic_cancel_64x64"
+        android:title="Cancel"
+        app:showAsAction="ifRoom"
+        >
+    </item>
+</menu>
