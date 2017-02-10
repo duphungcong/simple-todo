@@ -3,6 +3,9 @@ package com.duphungcong.simpletodo.activities;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -20,11 +23,17 @@ public class MainActivity extends AppCompatActivity implements TodoItemDialogFra
     TodoItemsAdapter itemsAdapter;
     ListView lvItems;
     TodoItemDialogFragment todoItemDialogFragment;
+    Toolbar mainToolBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // Find the toolbar view inside the activity layout
+        mainToolBar = (Toolbar) findViewById(R.id.tool_bar);
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        setSupportActionBar(mainToolBar);
 
         lvItems = (ListView)findViewById(R.id.lvItems);
 
@@ -37,6 +46,40 @@ public class MainActivity extends AppCompatActivity implements TodoItemDialogFra
 
         // Listen events from ListView
         setupListViewListener();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.btnSaveItem).setVisible(false);
+        menu.findItem(R.id.btnCancel).setVisible(false);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle when click on menu item
+        switch (item.getItemId()) {
+            case R.id.btnAddItem:
+                onAddItem();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void onAddItem() {
+        TodoItem newItem = new TodoItem();
+
+        FragmentManager fm = getSupportFragmentManager();
+        todoItemDialogFragment = TodoItemDialogFragment.newInstance(newItem, "new");
+        todoItemDialogFragment.show(fm, "fragment_todo_item");
     }
 
     // Add new item when click on ADD ITEM button
