@@ -17,7 +17,7 @@
     </item>
 
     <item
-        android:id="@+id/btnCancel"
+        android:id="@+id/btnCancelItem"
         android:icon="@drawable/ic_cancel_64x64"
         android:title="Cancel"
         app:showAsAction="ifRoom"

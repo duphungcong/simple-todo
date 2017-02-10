@@ -2,27 +2,21 @@ package com.duphungcong.simpletodo.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.duphungcong.simpletodo.R;
-import com.duphungcong.simpletodo.adapters.TodoItemsAdapter;
-import com.duphungcong.simpletodo.fragments.TodoItemDialogFragment;
+import com.duphungcong.simpletodo.fragments.TodoItemFragment;
+import com.duphungcong.simpletodo.fragments.TodoItemsListFragment;
 import com.duphungcong.simpletodo.models.TodoItem;
-import com.raizlabs.android.dbflow.sql.language.SQLite;
 
-import java.util.ArrayList;
-
-public class MainActivity extends AppCompatActivity implements TodoItemDialogFragment.ItemDialogListener {
-    ArrayList<TodoItem> items;
-    TodoItemsAdapter itemsAdapter;
-    ListView lvItems;
-    TodoItemDialogFragment todoItemDialogFragment;
+public class MainActivity
+        extends AppCompatActivity
+        implements TodoItemsListFragment.ItemEditListener, TodoItemFragment.ItemCommitListener {
+    
     Toolbar mainToolBar;
 
     @Override
@@ -30,22 +24,17 @@ public class MainActivity extends AppCompatActivity implements TodoItemDialogFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // Find the toolbar view inside the activity layout
-        mainToolBar = (Toolbar) findViewById(R.id.tool_bar);
+        mainToolBar = (Toolbar) findViewById(R.id.mainToolBar);
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(mainToolBar);
 
-        lvItems = (ListView)findViewById(R.id.lvItems);
-
-        // Read items from database
-        readItems();
-
-        // Setup ListView adapter
-        itemsAdapter = new TodoItemsAdapter(this, items);
-        lvItems.setAdapter(itemsAdapter);
-
-        // Listen events from ListView
-        setupListViewListener();
+        // Sets the fragment to list todo items
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        TodoItemsListFragment todoItemsListFragment = new TodoItemsListFragment();
+        ft.add(R.id.fragment_container, todoItemsListFragment);
+        ft.commit();
     }
 
     @Override
@@ -58,13 +47,13 @@ public class MainActivity extends AppCompatActivity implements TodoItemDialogFra
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.btnSaveItem).setVisible(false);
-        menu.findItem(R.id.btnCancel).setVisible(false);
+        menu.findItem(R.id.btnCancelItem).setVisible(false);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle when click on menu item
+        // Handle actions when click on menu items
         switch (item.getItemId()) {
             case R.id.btnAddItem:
                 onAddItem();
@@ -74,76 +63,38 @@ public class MainActivity extends AppCompatActivity implements TodoItemDialogFra
         }
     }
 
+    // Open new form with TodoItemFragment
     public void onAddItem() {
         TodoItem newItem = new TodoItem();
+        TodoItemFragment todoItemFragment = TodoItemFragment.newInstance(newItem);
 
         FragmentManager fm = getSupportFragmentManager();
-        todoItemDialogFragment = TodoItemDialogFragment.newInstance(newItem, "new");
-        todoItemDialogFragment.show(fm, "fragment_todo_item");
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragment_container, todoItemFragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
-    // Add new item when click on ADD ITEM button
-    public void onAddItem(View v) {
-        TodoItem newItem = new TodoItem();
-
-        FragmentManager fm = getSupportFragmentManager();
-        todoItemDialogFragment = TodoItemDialogFragment.newInstance(newItem, "new");
-        todoItemDialogFragment.show(fm, "fragment_todo_item");
-    }
-
-    private void setupListViewListener() {
-        // Press and hold to delete item
-        lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                TodoItem selectedItem = itemsAdapter.getItem(position);
-
-                // Update ListView
-                items.remove(position);
-                itemsAdapter.notifyDataSetChanged();
-
-                // Delete selected item from database
-                selectedItem.delete();
-
-                return true;
-            }
-        });
-
-        // Click to edit item
-        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                TodoItem selectedItem = itemsAdapter.getItem(position);
-
-                FragmentManager fm = getSupportFragmentManager();
-                todoItemDialogFragment = TodoItemDialogFragment.newInstance(selectedItem, "edit");
-                todoItemDialogFragment.show(fm, "fragment_todo_item");
-            }
-        });
-
-    }
-
-    // Read items from database
-    private void readItems() {
-        try {
-            items = (ArrayList<TodoItem>) SQLite.select().from(TodoItem.class).queryList();
-        } catch (Exception e) {
-            items = new ArrayList<>();
-        }
-    }
-
+    // Open edit form with selected item sent from TodoItemsListFragment
     @Override
-    public void onFinishItemDialog(TodoItem newItem, String action) {
-        newItem.save();
-        if(action == "new") {
-            itemsAdapter.add(newItem);
-        } else { // action = "edit"
-            itemsAdapter.notifyDataSetChanged();
-        }
+    public void onOpenEditForm(TodoItem selectedItem) {
+        TodoItemFragment todoItemFragment = TodoItemFragment.newInstance(selectedItem);
+
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragment_container, todoItemFragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
-    public void onSaveItem(View v) {
-        todoItemDialogFragment.onSaveItem(v);
+    // Open list item with TodoItemsListFragment
+    @Override
+    public void onCommitItem() {
+        TodoItemsListFragment todoItemsListFragment = new TodoItemsListFragment();
+
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragment_container, todoItemsListFragment);
+        ft.commit();
     }
 }
